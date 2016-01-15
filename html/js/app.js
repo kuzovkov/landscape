@@ -1,0 +1,208 @@
+/**основной модуль приложения**/
+var App = {};
+App.iface = {};
+App.cityPoly = null;  //мультиполигон(полигон) города
+App.point = null;//маркер произвольной точки
+App.city_list = [];//список городов
+App.city = null; //объект города
+
+App.init = function(){
+    App.map = Map;
+    App.map.init([56.605, 47.9]);
+    
+    App.iface.btnDelCity = document.getElementById('del-city');
+    App.iface.btnSaveCity = document.getElementById('save-city');
+    App.iface.btnDelMarkers = document.getElementById('del-markers');
+    App.iface.inputCityName = document.getElementById('city-name');
+    App.iface.inputCityLastname = document.getElementById('city-lastname');
+    App.iface.inputCityCountry = document.getElementById('city-country');
+    App.iface.selectCityList = document.getElementById('city-list');
+    App.iface.btnSaveCity.onclick = Handler.btnSaveCityClick;
+    App.iface.btnDelCity.onclick = Handler.btnDelCityClick;
+    App.iface.btnDelMarkers.onclick = Handler.btnDelMarkersClick;
+    App.iface.selectCityList.onchange = App.getCity;
+    App.map.addListener('click', Handler.mapClick);
+    App.iface.addRadioListener('task', App.switchMode);
+    App.switchMode();
+    App.iface.preloader = document.getElementById('preloader');
+    App.iface.time = document.getElementById('time');
+    App.getList();
+};
+
+App.delCity = function(){
+    
+};
+
+App.saveCity = function(){
+    
+};
+
+App.delMarkers = function(){
+    
+};
+
+/**
+* показ элемента
+**/
+App.iface.showElem = function(el){
+    el.style.display = 'inline-block';
+};
+
+/**
+* скрытие элемента
+**/
+App.iface.hideElem = function(el){
+    el.style.display = 'none';
+};
+
+
+/**
+* Получение значение радио переключателя вида задачи
+* @param name атрибут name радиокнопки 
+* @return значение
+**/
+App.iface.getRadio = function(name){
+    var inputs = document.getElementsByTagName('input');
+    for ( var i = 0; i < inputs.length; i++ ){
+        if ( inputs[i].attributes.name.value == name )
+            if ( inputs[i].attributes.type.value == 'radio' )
+                if( inputs[i].checked ) return inputs[i].value;
+    }
+    return null;
+};
+
+
+/**
+ * установка обработчиков на переключение радиокнопки
+ **/
+App.iface.addRadioListener = function(name, handler){
+    var inputs = document.getElementsByTagName('input');
+    for ( var i = 0; i < inputs.length; i++ ){
+        if ( inputs[i].attributes.name.value == name )
+            if ( inputs[i].attributes.type.value == 'radio' )
+                inputs[i].addEventListener('change', handler);
+    }
+};
+
+
+App.switchMode = function(){
+    var radio = App.iface.getRadio('task');
+    console.log(radio);
+    if (radio == 'view'){
+        document.getElementById('buttons').style.display = 'none';
+    }else{
+        document.getElementById('buttons').style.display = 'block';
+    }
+};
+
+
+/**
+* определение принадлежности заданной точки к городу 
+* @param point заданная точка {lat:lat, lng:lng}
+**/
+App.searchCity = function(point){
+    App.iface.showElem(App.iface.preloader);
+    Time.start();
+    Request.searchCity(point, function(result){
+        App.iface.hideElem(App.iface.preloader);
+        App.iface.time.textContent = Time.stop() + ' мс';
+        App.iface.time.innerText = Time.stop() + ' мс';
+        //console.log(JSON.stringify(result));
+        if ( result.incity == true ){
+            App.hideCity();
+            App.showCity(result);
+            
+        }else{
+            App.hideCity();
+        }
+        App.getList();
+    });
+};
+
+/**
+ * получения города по его id
+ **/
+App.getCity = function(){
+    var id = App.iface.selectCityList.value;
+    App.iface.showElem(App.iface.preloader);
+    Request.getCity(id, App.showCity2);
+};
+
+/**
+ * Показать границы города на карте 
+ **/
+App.showCity = function(result){
+    App.hideCity();
+    App.city = result;
+    App.cityPoly = L.geoJson(result.city_geometry).addTo(Map.map);
+    App.iface.inputCityName.value = result.city_name;
+    App.iface.inputCityLastname.value = result.city_lastname;
+    App.iface.inputCityCountry.value = result.city_country;
+};
+
+/**
+ * Показать границы города на карте 
+ **/
+App.showCity2 = function(result){
+    App.iface.hideElem(App.iface.preloader);
+    App.hideCity();
+    App.map.setCenter([result.avg_lat, result.avg_lng]);
+    App.city = result;
+    App.cityPoly = L.geoJson(result.city_geometry).addTo(Map.map);
+    App.iface.inputCityName.value = result.city_name;
+    App.iface.inputCityLastname.value = result.city_lastname;
+    App.iface.inputCityCountry.value = result.city_country;
+};
+
+/**
+ * Скрыть границы города на карте 
+ **/
+App.hideCity = function(){
+    if (App.cityPoly != null){
+        Map.map.removeLayer(App.cityPoly);
+        App.city = null;
+        App.cityPoly = null;
+    }
+    App.iface.inputCityName.value = "";
+    App.iface.inputCityLastname.value = "";
+    App.iface.inputCityCountry.value = "";
+};
+
+/**
+ * Запрос списка городов
+ **/
+App.getList = function(){
+    Request.getList(App.fillList);
+};
+
+/**
+ * Заполнение списка городов
+ * */
+App.fillList = function(result){
+    
+    App.city_list = result.city_list;
+    App.iface.destroyChildren(App.iface.selectCityList);
+    
+    for (var i = 0; i < result.city_list.length; i++){
+        var opt = document.createElement('option');
+        opt.value = result.city_list[i].id;
+        opt.innerText = result.city_list[i].city_name;
+        opt.textContent = result.city_list[i].city_name;
+        if (App.city != null && result.city_list[i].id == App.city.id){
+            opt.selected = 'selected';
+        }
+        App.iface.selectCityList.appendChild(opt);
+    }
+        
+};
+
+/**
+* удаление дочерних узлов у DOM элемента
+* @param node DOM элемент
+**/
+App.iface.destroyChildren = function(node){
+  if (!node) return;
+  node.innerHTML = '';
+  while (node.firstChild)
+      node.removeChild(node.firstChild);
+}

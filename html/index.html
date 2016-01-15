@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Редактор границ городов</title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+	<link rel="stylesheet" href="/css/style.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script src="js/lib/leaflet-providers.js"></script>
+	<script src="js/lib/google_tiles.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/request.js"></script>
+	<script type="text/javascript" src="js/helper.js"></script>
+	<script type="text/javascript" src="js/time.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+    <body>
+		<h2 class="title">
+			Редактор границ городов <br/>	
+		</h4>
+		<p class="name">
+            <input id="city-name" type="text" name="name" value="" placeholder="Name"/>&nbsp;
+            <input id="city-lastname" type="text" name="lastname" value="" placeholder="Lastname" />&nbsp;
+            <input id="city-country" type="text" name="country" value="" placeholder="Country"/>&nbsp;
+		</p>
+		<div id="map-block"></div>
+		
+		<div class="panel grad2">
+           &nbsp; 
+            <div class="tasks" >
+                <input type="radio" name="task" value="view" checked/><label>Просмотр</label><br/>
+                <input type="radio" name="task" value="edit"/><label>Редактирование</label>
+            </div>
+            <div id="buttons">
+                <button class="grad2" id="del-city">Удалить</button>
+                <button class="grad2" id="save-city">Сохранить</button>
+                <button class="grad2" id="del-markers">Удалить маркеры</button>
+            </div>
+            <p>Список городов: </p>
+            <select id="city-list">
+            
+            </select>
+		</div>
+		<div id="preloader"><img src="/img/load.gif"/></div>
+		<label class="time-label">Time: </label><span class="time-label" id="time"></span>
+		<script type="text/javascript" src="js/map.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+		<script type="text/javascript" src="js/handler.js"></script>
+		
+    </body>
+</html>
