@@ -18,9 +18,24 @@
 	<script type="text/javascript" src="js/index.js"></script>
 </head>
     <body>
-		<h2 class="title">
-			Редактор границ городов <br/>	
-		</h4>
+		<div class="panel grad2">
+            
+            <h4 class="title">Редактор границ городов&nbsp;</h4>
+            <div class="tasks" >
+                <input type="radio" name="task" value="view" checked/><label>Просмотр</label><br/>
+                <input type="radio" name="task" value="edit"/><label>Редактирование</label>
+            </div>
+            <div class="select">
+                <p>Список городов: </p>
+                <select id="city-list"></select>
+            </div>
+            <div id="buttons" class="buttons">
+                <button class="grad2" id="del-city">Удалить</button>
+                <button class="grad2" id="save-city">Сохранить</button>
+                <button class="grad2" id="del-markers">Удалить маркеры</button>
+            </div>   
+        </div>
+        <div class="clr"></div>
 		<p class="name">
             <input id="city-name" type="text" name="name" value="" placeholder="Name"/>&nbsp;
             <input id="city-lastname" type="text" name="lastname" value="" placeholder="Lastname" />&nbsp;
@@ -28,22 +43,7 @@
 		</p>
 		<div id="map-block"></div>
 		
-		<div class="panel grad2">
-           &nbsp; 
-            <div class="tasks" >
-                <input type="radio" name="task" value="view" checked/><label>Просмотр</label><br/>
-                <input type="radio" name="task" value="edit"/><label>Редактирование</label>
-            </div>
-            <div id="buttons">
-                <button class="grad2" id="del-city">Удалить</button>
-                <button class="grad2" id="save-city">Сохранить</button>
-                <button class="grad2" id="del-markers">Удалить маркеры</button>
-            </div>
-            <p>Список городов: </p>
-            <select id="city-list">
-            
-            </select>
-		</div>
+		
 		<div id="preloader"><img src="/img/load.gif"/></div>
 		<label class="time-label">Time: </label><span class="time-label" id="time"></span>
 		<script type="text/javascript" src="js/map.js"></script>

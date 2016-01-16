@@ -3,8 +3,25 @@ var App = {};
 App.iface = {};
 App.cityPoly = null;  //мультиполигон(полигон) города
 App.point = null;//маркер произвольной точки
-App.city_list = [];//список городов
+App.city_list = [];//список городов (массив объектов)
 App.city = null; //объект города
+App.iface.boundaryIcon = L.icon({ //иконка флажка для обозначения границы
+    iconUrl: 'img/flag32.png',
+    iconRetinaUrl: 'img/flag32.png',
+    iconSize: [32, 32],
+    iconAnchor: [0, 32],
+    popupAnchor: [0, 32]
+});
+
+App.tempPoligonStyle = {
+    "color": "#ff7800",
+    "weight": 2,
+    "opacity": 0.65
+};
+
+App.boundaryMarkers = [];//массив для хранения объектов маркеров обозначающих границу
+App.tempPoligonGeoJSON = null; //объект для хранения GeoJSON временного полигона
+App.tempPoligon = null; //объект для хранения временного полигона
 
 App.init = function(){
     App.map = Map;
@@ -27,6 +44,7 @@ App.init = function(){
     App.iface.preloader = document.getElementById('preloader');
     App.iface.time = document.getElementById('time');
     App.getList();
+   
 };
 
 App.delCity = function(){
@@ -40,6 +58,8 @@ App.saveCity = function(){
 App.delMarkers = function(){
     
 };
+
+
 
 /**
 * показ элемента
@@ -206,3 +226,33 @@ App.iface.destroyChildren = function(node){
   while (node.firstChild)
       node.removeChild(node.firstChild);
 }
+
+/**
+ * отображение временного полигона на карте
+ * */
+App.showTempPoligon = function(markers){
+    App.hideTempPoligon();
+    if (markers.length < 3) return false;
+    App.tempPoligonGeoJSON = {};
+    App.tempPoligonGeoJSON.type = "Polygon";
+    var coords = [];
+    for (var i = 0; i < markers.length; i++){
+        coords.push([markers[i].getLatLng().lng, markers[i].getLatLng().lat]);
+        
+    }
+    App.tempPoligonGeoJSON.coordinates = [coords];
+    console.log(JSON.stringify(App.tempPoligonGeoJSON));
+    App.tempPoligon = L.geoJson(App.tempPoligonGeoJSON,{style:App.tempPoligonStyle}).addTo(Map.map);
+    return true;
+};
+
+/**
+ * удаление временного полигона с карты
+ * */
+App.hideTempPoligon = function(){
+    if (App.tempPoligon != null){
+        App.map.removeLayer(App.tempPoligon);
+        App.tempPoligon = null;
+        App.tempPoligonGeoJSON = null;
+    }
+};

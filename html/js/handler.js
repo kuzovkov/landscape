@@ -16,8 +16,15 @@ Handler.btnDelCityClick = function(){
     alert('del-city');
 };
     
+/**
+ * удаление маркеров с карты 
+ **/
 Handler.btnDelMarkersClick = function(){
-     alert('del-markers');   
+    for (var i = 0; i < Handler.app.boundaryMarkers.length; i++){
+        Handler.app.map.removeLayer(Handler.app.boundaryMarkers[i]);
+    }
+    Handler.app.boundaryMarkers = [];
+    App.hideTempPoligon();
 };
     
 
@@ -44,6 +51,16 @@ Handler.mapClick = function(e){
         });
         
     }else{
-        
+         if (Handler.app.point != null){
+            Handler.app.map.removeLayer(Handler.app.point);
+            Handler.app.point = null;
+        }
+        var point = {lat:e.latlng.lat, lng:e.latlng.lng};
+        var boundaryMarker = L.marker(L.latLng(point.lat, point.lng), {draggable:true, icon: Handler.app.iface.boundaryIcon}).addTo(Handler.app.map.map);
+        Handler.app.boundaryMarkers.push(boundaryMarker);
+        Handler.app.boundaryMarkers[Handler.app.boundaryMarkers.length - 1].on('dragend', function(e){
+            Handler.app.showTempPoligon(Handler.app.boundaryMarkers);
+        });
+        Handler.app.showTempPoligon(Handler.app.boundaryMarkers);
     }         
 };

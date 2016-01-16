@@ -5,7 +5,7 @@ body
 
 #map-block
 {
-	width: 1024px; 
+	width: 100%; 
     height: 768px;
 }
 
@@ -53,13 +53,6 @@ body
 } 
 
 
-button
-{
-	font-size: 1.2em;
-	padding: 3px;
-	font-family: Verdana;
-	z-index:2;
-}
 
 .log-message
 {
@@ -71,13 +64,23 @@ button
     overflow: scroll;
 }
 
-select.select
+.grad
 {
-	font-size: 1.2em;
-	float: left;
-	padding: 3px;
-	font-family: Verdana;
+    background: linear-gradient(to top, #b5bdc8 0%, #828c95 36%, #28343b 100%);
 }
+
+.grad2
+{
+    background: linear-gradient(to top, #e5edf8 0%, #b2bcc5 36%, #58646b 100%);
+}
+
+
+.rad2
+{
+    border-radius: 20px;
+}
+
+
 
 .service
 {
@@ -132,72 +135,103 @@ hr
 	font-size: 1.5em;
 }
 
-.title
-{
-	color: #fff;
-	text-decoration: underline;
-}
+
 
 .panel
 {
-    width: 18%;
-    position: absolute;
-    top: 105px;
-    right: 10px;
+    width: 100%;
+    height: 50px;
     font-size: 0.8em;
     font-family: Verdana;
     color: #333;
-    display: block;
-    padding: 20px auto 20px auto;
-}
-
-.panel input
-{
-    font-size: 1.0em;
-    margin-left: 23px;
-}
-
-.panel select
-{
-     margin-left: 23px;
-     margin-bottom: 20px;
+    padding: 0;
 }
 
 .panel p
 {
-    margin-left: 23px;
+    margin: 0 0 0 3px;
+    display: inline-block;
 }
 
 p.name input
 {
-    width: 300px;
+    width: 30%;
 }
 
 .panel button
 {
      font-size: 1.0em;
-     margin: 5px auto 5px auto;
-     width: 80%;
-     display: block;
-}
-
-.grad
-{
-    background: linear-gradient(to top, #b5bdc8 0%, #828c95 36%, #28343b 100%);
-}
-
-.grad2
-{
-    background: linear-gradient(to top, #e5edf8 0%, #b2bcc5 36%, #58646b 100%);
+     margin: 2px auto 2px auto;
+     width: 30%;
 }
 
 
-.rad2
+
+.tasks
 {
-    border-radius: 20px;
+    width: 15%;
+    float:left;
+    margin: 0 0 0 5px;
+    padding: 5px 0 0 0;
+    height: 45px;
+    border-right: 1px solid #999; 
 }
 
 #buttons
 {
     display: none;
 }
+
+.buttons
+{
+    margin: 0 0 0 5px;
+    padding: 5px 0 0 0; 
+    width: 40%;
+    float: left;
+    height: 45px;
+}
+
+.select
+{
+    width: 25%;
+    float: left;
+    margin: 0 0 0 5px;
+    height: 45px;
+    padding: 5px 0 0 0;
+    border-right: 1px solid #999; 
+}
+
+.border
+{
+    border: 1px solid red;
+}
+
+.border2
+{
+    border: 1px solid green;
+}
+.border3
+{
+    border: 1px solid blue;
+}
+
+h4.title
+{
+    width: 15%;
+    margin: 0;
+    padding: 5px 0 0 0;
+    color: #333;
+    font-family: Verdana;
+    dislpay: block;
+    float: left;
+    margin: 0 0 0 5px;
+    height: 45px;
+    border-right: 1px solid #999; 
+}
+
+.clr
+{
+    clear: both;
+}
+
+
