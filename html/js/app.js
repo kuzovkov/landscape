@@ -13,15 +13,15 @@ App.iface.boundaryIcon = L.icon({ //иконка флажка для обозн�
     popupAnchor: [0, 32]
 });
 
-App.tempPoligonStyle = {
+App.tempPolygonStyle = {
     "color": "#ff7800",
     "weight": 2,
     "opacity": 0.65
 };
 
 App.boundaryMarkers = [];//массив для хранения объектов маркеров обозначающих границу
-App.tempPoligonGeoJSON = null; //объект для хранения GeoJSON временного полигона
-App.tempPoligon = null; //объект для хранения временного полигона
+App.tempPolygonGeoJSON = null; //объект для хранения GeoJSON временного полигона
+App.tempPolygon = null; //объект для хранения временного полигона
 
 App.init = function(){
     App.map = Map;
@@ -230,29 +230,75 @@ App.iface.destroyChildren = function(node){
 /**
  * отображение временного полигона на карте
  * */
-App.showTempPoligon = function(markers){
-    App.hideTempPoligon();
+App.showTempPolygon = function(markers){
+    App.hideTempPolygon();
     if (markers.length < 3) return false;
-    App.tempPoligonGeoJSON = {};
-    App.tempPoligonGeoJSON.type = "Polygon";
+    App.tempPolygonGeoJSON = {};
+    App.tempPolygonGeoJSON.type = "Polygon";
     var coords = [];
     for (var i = 0; i < markers.length; i++){
         coords.push([markers[i].getLatLng().lng, markers[i].getLatLng().lat]);
         
     }
-    App.tempPoligonGeoJSON.coordinates = [coords];
-    console.log(JSON.stringify(App.tempPoligonGeoJSON));
-    App.tempPoligon = L.geoJson(App.tempPoligonGeoJSON,{style:App.tempPoligonStyle}).addTo(Map.map);
+    App.tempPolygonGeoJSON.coordinates = [coords];
+    console.log(JSON.stringify(App.tempPolygonGeoJSON));
+    App.tempPolygon = L.geoJson(App.tempPolygonGeoJSON,{style:App.tempPolygonStyle}).addTo(Map.map);
     return true;
 };
 
 /**
  * удаление временного полигона с карты
  * */
-App.hideTempPoligon = function(){
-    if (App.tempPoligon != null){
-        App.map.removeLayer(App.tempPoligon);
-        App.tempPoligon = null;
-        App.tempPoligonGeoJSON = null;
+App.hideTempPolygon = function(){
+    if (App.tempPolygon != null){
+        App.map.removeLayer(App.tempPolygon);
+        App.tempPolygon = null;
+        App.tempPolygonGeoJSON = null;
+    }
+};
+
+
+/**
+ * Отправка запроса на сервер для сохранения изменений в базу 
+ * */
+App.saveChange = function(){
+    var name = App.iface.inputCityName.value;
+    var lastname = App.iface.inputCityLastname;
+    var country = App.iface.inputCityCountry;
+    var geometry = null;
+    var id = -1;
+    if (App.tempPolygon != null && App.city != null){
+        geometry = App.tempPolygonGeoJSON;
+        id = App.city.id;
+        Request.editCity(id, name, lastname, country, geometry, function(){
+            
+        });
+    }else if (App.city != null){
+        geometry = App.city.city_geometry;
+        id = App.city.id;
+        Request.editCity(id, name, lastname, country, geometry, function(){
+            
+        });
+    }else if(App.tempPolygon != null){
+        geometry = App.tempPolygonGeoJSON;
+        Request.addCity(name, lastname, country, geometry, function(){
+            
+        });
+    }else{
+        alert('Полигон не задан!');
+        return;
+    }    
+};
+
+
+/**
+ * Отправка запроса на сервер для удаления города
+ * */
+App.delCity = function(){
+    if (App.city != null){
+        var id = App.city.id;
+        Request.delCity(id, function(){
+            
+        });
     }
 };

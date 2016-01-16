@@ -8,20 +8,18 @@ import math
 
 DB_DIR = '/home/user1/game1/db/'
 PLACES_DB_FILE = 'places.sqlite'
+CITY_DB_FILE = 'city.sqlite'
 MIN_RAST = 0.05
 
 def application(environ, start_response):
     status = '200 OK'
     d = parse_qs(environ['QUERY_STRING'])
     data = d['data'][0].split(',')
-    print data
-    point_lat = float(data[0])
-    point_lng = float(data[1])
-    db_file = data[2]
-    city = getCity(point_lat, point_lng, db_file)
-    print city
-    if city != None:
-        response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '","city_geometry":' + city[2] + ', "city_country":"' + city[3] + '"}'
+    id = int(data[0])
+    db_file = CITY_DB_FILE
+    res = delCity(id, db_file)
+    if res != None:
+        response = '{"incity":true}'
         #response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '"}'
     else:
         response = '{"incity":false}'
@@ -30,34 +28,15 @@ def application(environ, start_response):
     return [response]
 
 #определение пересечения точки с полигоном города и возврат в случае пересечения имени города и его полигона
-def getCity(point_lat, point_lng, db_file):
+def delCity(id, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
-    sql = "SELECT id, geometry, city_name, city_lastname, country FROM city WHERE min_lng <= " + str(point_lng) + " AND min_lat <= " + str(point_lat) + " AND max_lng  >= " + str(point_lng) + " AND max_lat >= " + str(point_lat)
-    id = -1
+    sql = "DELETE FROM city WHERE id=" + str(id)
     res = cur.execute(sql)
-    for rec in res:
-        id = rec[0]
-        city_geometry = rec[1].strip().encode('utf-8')
-        city_name = rec[2].encode('utf-8')
-        city_lastname = rec[3].encode('utf-8')
-        city_country = rec[4].encode('utf-8')
-        print 'cyty_name: '+city_name
-        point_geometry = '{"type":"Point","coordinates":[' + str(point_lng) + ',' + str(point_lat) + ']}'
-    if id == -1:
-        return None
-    sql = "SELECT Intersects(GeomFromGeoJSON('" + city_geometry + "'),GeomFromGeoJSON('" + point_geometry + "'))"
-    res = cur.execute(sql)
-    in_city = 0
-    for rec in res:
-        print 'rec=' + str(rec)
-        in_city = rec[0]
+    conn.commit()
     cur.close()
     conn.close()
-    if in_city == 1:
-        return (city_name, city_lastname, city_geometry, city_country)
-    else:
-        return None
+    return res
 
 #нахождение населенных пунктов центры которых удалены на расстояние не более заданного от заданной точки
 #в случае нахождения возврат названия и геометрии ближайшего населенного пункта

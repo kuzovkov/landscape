@@ -41,6 +41,39 @@ var Request = {
         Ajax.sendRequest('GET', url, params, function(result) {
             callback(result);
         });
+    },
+    
+    /**
+     * редактирование записи о городе
+     * */
+    editCity: function(id, name, lastname, country, geometry, callback){
+        var params = 'data=' + [id, name, lastname, country, JSON.stringify(geometry)].join('|');
+        var url = Request.server+'/editcity';
+        Ajax.sendRequest('POST', url, params, function(result) {
+            callback(result);
+        });
+    },
+    
+     /**
+     * создание записи о городе
+     * */
+    addCity: function(name, lastname, country, geometry, callback){
+        var params = 'data=' + [name, lastname, country, JSON.stringify(geometry)].join('|');
+        var url = Request.server+'/addcity';
+        Ajax.sendRequest('POST', url, params, function(result) {
+            callback(result);
+        });
+    },
+    
+     /**
+     * удаление записи о городе
+     * */
+    delCity: function(id, callback){
+        var params = 'data=' + id;
+        var url = Request.server+'/delcity';
+        Ajax.sendRequest('POST', url, params, function(result) {
+            callback(result);
+        });
     }
     
        

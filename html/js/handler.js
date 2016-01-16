@@ -6,14 +6,19 @@ Handler.init = function(app){
     Handler.app = app;
 };
 
+/**
+ * Отправка запроса на сервер для сохранения изменений в базу
+ * */
 Handler.btnSaveCityClick = function(){
-    alert('save');
+    Handler.app.saveChange();
 };
 
 
-    
+/**
+ * удаление текущего города из базы
+ **/    
 Handler.btnDelCityClick = function(){
-    alert('del-city');
+    Handler.app.delCity();
 };
     
 /**
@@ -24,7 +29,7 @@ Handler.btnDelMarkersClick = function(){
         Handler.app.map.removeLayer(Handler.app.boundaryMarkers[i]);
     }
     Handler.app.boundaryMarkers = [];
-    App.hideTempPoligon();
+    App.hideTempPolygon();
 };
     
 
@@ -59,8 +64,8 @@ Handler.mapClick = function(e){
         var boundaryMarker = L.marker(L.latLng(point.lat, point.lng), {draggable:true, icon: Handler.app.iface.boundaryIcon}).addTo(Handler.app.map.map);
         Handler.app.boundaryMarkers.push(boundaryMarker);
         Handler.app.boundaryMarkers[Handler.app.boundaryMarkers.length - 1].on('dragend', function(e){
-            Handler.app.showTempPoligon(Handler.app.boundaryMarkers);
+            Handler.app.showTempPolygon(Handler.app.boundaryMarkers);
         });
-        Handler.app.showTempPoligon(Handler.app.boundaryMarkers);
+        Handler.app.showTempPolygon(Handler.app.boundaryMarkers);
     }         
 };

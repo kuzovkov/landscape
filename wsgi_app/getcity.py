@@ -15,13 +15,12 @@ def application(environ, start_response):
     status = '200 OK'
     d = parse_qs(environ['QUERY_STRING'])
     data = d['data'][0].split(',')
-    print data
     id = int(data[0])
     db_file = CITY_DB_FILE
-    city = getCity(id, db_file)
-    print city
-    if city != None:
-        response = '{"result":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '","city_geometry":' + city[2] + ', "city_country":"' + city[3] + '", "id":' + str(city[4])+ ', "avg_lat":'+str(city[5])+', "avg_lng":'+str(city[6])+'}'
+    res = delCity(id, db_file)
+   
+    if res != None:
+        response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '","city_geometry":' + city[2] + ', "city_country":"' + city[3] + '", "id":' + str(city[4])+ ', "avg_lat":'+str(city[5])+', "avg_lng":'+str(city[6])+'}'
         #response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '"}'
     else:
         response = '{"result":false}'
