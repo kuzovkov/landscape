@@ -43,6 +43,8 @@ def getListCity(db_file):
         max_lng = rec[8]
         cityitem = '{"incity":true, "city_name":"' + city_name + '", "city_lastname":"' + city_lastname + '","city_geometry":' + city_geometry + ', "city_country":"' + city_country + '", "id":' + str(id)+ ', "avg_lat":'+str((min_lat+max_lat)/2)+', "avg_lng":'+str((min_lng+max_lng)/2)+'}'
         citylist.append(cityitem);
+    cur.close()
+    conn.close()
     if len(citylist) == 0:
         return None
     else:

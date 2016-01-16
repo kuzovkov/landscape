@@ -47,19 +47,6 @@ App.init = function(){
    
 };
 
-App.delCity = function(){
-    
-};
-
-App.saveCity = function(){
-    
-};
-
-App.delMarkers = function(){
-    
-};
-
-
 
 /**
 * показ элемента
@@ -270,19 +257,21 @@ App.saveChange = function(){
     if (App.tempPolygon != null && App.city != null){
         geometry = App.tempPolygonGeoJSON;
         id = App.city.id;
-        Request.editCity(id, name, lastname, country, geometry, function(){
-            
+        Request.editCity(id, name, lastname, country, geometry, function(result){
+            App.getCity();
         });
     }else if (App.city != null){
         geometry = App.city.city_geometry;
         id = App.city.id;
-        Request.editCity(id, name, lastname, country, geometry, function(){
-            
+        Request.editCity(id, name, lastname, country, geometry, function(result){
+            App.getCity();
         });
     }else if(App.tempPolygon != null){
         geometry = App.tempPolygonGeoJSON;
-        Request.addCity(name, lastname, country, geometry, function(){
-            
+        App.iface.showElem(App.iface.preloader);
+        Request.addCity(name, lastname, country, geometry, function(result){
+            App.hideTempPolygon();
+            App.showCity2(result);
         });
     }else{
         alert('Полигон не задан!');
@@ -298,7 +287,7 @@ App.delCity = function(){
     if (App.city != null){
         var id = App.city.id;
         Request.delCity(id, function(){
-            
+            App.hideCity();
         });
     }
 };

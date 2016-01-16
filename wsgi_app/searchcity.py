@@ -19,7 +19,7 @@ def application(environ, start_response):
     point_lat = float(data[0])
     point_lng = float(data[1])
     db_file = CITY_DB_FILE
-    city = getCity(point_lat, point_lng, db_file)
+    city = searchCity(point_lat, point_lng, db_file)
     print city
     if city != None:
         response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '","city_geometry":' + city[2] + ', "city_country":"' + city[3] + '", "id":' + str(city[4])+ ', "avg_lat":'+str(city[5])+', "avg_lng":'+str(city[6])+'}'
@@ -31,7 +31,7 @@ def application(environ, start_response):
     return [response]
 
 #определение пересечения точки с полигоном города и возврат в случае пересечения имени города и его полигона
-def getCity(point_lat, point_lng, db_file):
+def searchCity(point_lat, point_lng, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
     sql = "SELECT id, geometry, city_name, city_lastname, country, min_lat, min_lng, max_lat, max_lng FROM city WHERE min_lng <= " + str(point_lng) + " AND min_lat <= " + str(point_lat) + " AND max_lng  >= " + str(point_lng) + " AND max_lat >= " + str(point_lat)
@@ -62,25 +62,3 @@ def getCity(point_lat, point_lng, db_file):
         return (city_name, city_lastname, city_geometry, city_country, id, (min_lat+max_lat)/2, (min_lng+max_lng)/2)
     else:
         return None
-
-#нахождение населенных пунктов центры которых удалены на расстояние не более заданного от заданной точки
-#в случае нахождения возврат названия и геометрии ближайшего населенного пункта
-def getPlace(point_lat, point_lng):
-	conn = db.connect(DB_DIR + PLACES_DB_FILE)
-	cur = conn.cursor()
-	sql = "SELECT id, place_name, place_type, geometry, lat, lng, country, Distance(GeomFromGeoJSON(geometry), MakePoint("+str(point_lng)+","+str(point_lat)+")) as rast from place where Distance(GeomFromGeoJSON(geometry), MakePoint("+str(point_lng)+","+str(point_lat)+")) < " + str(min_rast)
-	res = cur.execute(sql)
-	places = []
-	for rec in res:
-		place = {}
-		place['id'] = rec[0]
-		place['place_name'] = rec[1].encode('utf-8')
-		place['place_type'] = rec[2].encode('utf-8')
-		place['place_geometry'] = rec[3].encode('utf-8')
-		place['rast'] = rec[7]
-		places.append(place)
-	if len(places) == 0:
-		return None
-	else:
-		places.sort(key = lambda x: x['rast'])
-		return (places[0]['place_name'], places[0]['place_type'], places[0]['place_geometry'])
