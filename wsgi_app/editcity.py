@@ -13,7 +13,12 @@ MIN_RAST = 0.05
 
 def application(environ, start_response):
     status = '200 OK'
-    d = parse_qs(environ['QUERY_STRING'])
+    try:
+        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+    except (ValueError):
+        request_body_size = 0
+    request_body = environ['wsgi.input'].read(request_body_size)
+    d = parse_qs(request_body)
     data = d['data'][0].split('|')
     id = int(data[0]) 
     name = data[1]
@@ -36,8 +41,10 @@ def editCity(id, city_name, city_lastname, city_country, city_geometry, db_file)
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
     sql = "SELECT MbrMinX(GeomFromGeoJSON('"+ city_geometry +"')) as min_lng, MbrMinY(GeomFromGeoJSON('"+ city_geometry +"')) as min_lat, MbrMaxX(GeomFromGeoJSON('"+ city_geometry +"')) as max_lng, MbrMaxY(GeomFromGeoJSON('"+ city_geometry +"')) as max_lat"
+    print sql
     res = cur.execute(sql)
     for rec in res:
+        print rec
         min_lng = rec[0]
         min_lat = rec[1]
         max_lng = rec[2]

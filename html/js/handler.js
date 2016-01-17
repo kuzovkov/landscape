@@ -25,10 +25,7 @@ Handler.btnDelCityClick = function(){
  * удаление маркеров с карты 
  **/
 Handler.btnDelMarkersClick = function(){
-    for (var i = 0; i < Handler.app.boundaryMarkers.length; i++){
-        Handler.app.map.removeLayer(Handler.app.boundaryMarkers[i]);
-    }
-    Handler.app.boundaryMarkers = [];
+    App.delBoundaryMarkers();
     App.hideTempPolygon();
 };
     

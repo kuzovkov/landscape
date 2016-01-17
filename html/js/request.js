@@ -48,6 +48,7 @@ var Request = {
      * */
     editCity: function(id, name, lastname, country, geometry, callback){
         var params = 'data=' + [id, name, lastname, country, JSON.stringify(geometry)].join('|');
+        console.log(params);
         var url = Request.server+'/editcity';
         Ajax.sendRequest('POST', url, params, function(result) {
             callback(result);
@@ -71,7 +72,7 @@ var Request = {
     delCity: function(id, callback){
         var params = 'data=' + id;
         var url = Request.server+'/delcity';
-        Ajax.sendRequest('POST', url, params, function(result) {
+        Ajax.sendRequest('GET', url, params, function(result) {
             callback(result);
         });
     }

@@ -14,6 +14,7 @@ MIN_RAST = 0.05
 def application(environ, start_response):
     status = '200 OK'
     d = parse_qs(environ['QUERY_STRING'])
+    print d
     data = d['data'][0].split(',')
     id = int(data[0])
     db_file = CITY_DB_FILE

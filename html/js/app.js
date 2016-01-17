@@ -62,6 +62,15 @@ App.iface.hideElem = function(el){
     el.style.display = 'none';
 };
 
+/**
+ * удаление маркеров обозначающих границу
+ * */
+App.delBoundaryMarkers = function(){
+    for (var i = 0; i < App.boundaryMarkers.length; i++){
+        App.map.removeLayer(App.boundaryMarkers[i]);
+    }
+    App.boundaryMarkers = [];
+};
 
 /**
 * Получение значение радио переключателя вида задачи
@@ -97,6 +106,8 @@ App.switchMode = function(){
     console.log(radio);
     if (radio == 'view'){
         document.getElementById('buttons').style.display = 'none';
+        App.delBoundaryMarkers();
+        App.hideTempPolygon();
     }else{
         document.getElementById('buttons').style.display = 'block';
     }
@@ -250,8 +261,8 @@ App.hideTempPolygon = function(){
  * */
 App.saveChange = function(){
     var name = App.iface.inputCityName.value;
-    var lastname = App.iface.inputCityLastname;
-    var country = App.iface.inputCityCountry;
+    var lastname = App.iface.inputCityLastname.value;
+    var country = App.iface.inputCityCountry.value;
     var geometry = null;
     var id = -1;
     if (App.tempPolygon != null && App.city != null){
@@ -271,7 +282,9 @@ App.saveChange = function(){
         App.iface.showElem(App.iface.preloader);
         Request.addCity(name, lastname, country, geometry, function(result){
             App.hideTempPolygon();
+            App.delBoundaryMarkers();
             App.showCity2(result);
+            App.getList();
         });
     }else{
         alert('Полигон не задан!');
@@ -288,6 +301,7 @@ App.delCity = function(){
         var id = App.city.id;
         Request.delCity(id, function(){
             App.hideCity();
+            App.getList();
         });
     }
 };

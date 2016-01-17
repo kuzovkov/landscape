@@ -17,9 +17,8 @@ def application(environ, start_response):
     data = d['data'][0].split(',')
     id = int(data[0])
     db_file = CITY_DB_FILE
-    res = delCity(id, db_file)
-   
-    if res != None:
+    city = getCity(id, db_file)
+    if city != None:
         response = '{"result":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '","city_geometry":' + city[2] + ', "city_country":"' + city[3] + '", "id":' + str(city[4])+ ', "avg_lat":'+str(city[5])+', "avg_lng":'+str(city[6])+'}'
         #response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '"}'
     else:
