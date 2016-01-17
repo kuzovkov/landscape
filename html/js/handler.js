@@ -27,6 +27,7 @@ Handler.btnDelCityClick = function(){
 Handler.btnDelMarkersClick = function(){
     App.delBoundaryMarkers();
     App.hideTempPolygon();
+    App.hideCityPolygon();
 };
     
 

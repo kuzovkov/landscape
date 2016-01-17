@@ -240,6 +240,12 @@ h4.title
     float: right;
     text-decoration: none;
     margin: 18px 10px 0 0;
+    color: #333;
+}
+
+.helplink:vizited
+{
+    color: #333;
 }
 
 

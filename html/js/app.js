@@ -103,7 +103,7 @@ App.iface.addRadioListener = function(name, handler){
 
 App.switchMode = function(){
     var radio = App.iface.getRadio('task');
-    console.log(radio);
+    //console.log(radio);
     if (radio == 'view'){
         document.getElementById('buttons').style.display = 'none';
         App.delBoundaryMarkers();
@@ -113,7 +113,7 @@ App.switchMode = function(){
         document.getElementById('buttons').style.display = 'block';
         App.hideCityPolygon();
         App.createMarkersFromCity();
-        App.showCityPolygon();
+        App.showTempPolygon(App.boundaryMarkers);
     }
 };
 
@@ -170,7 +170,9 @@ App.showCity2 = function(result){
     App.hideCity();
     App.map.setCenter([result.avg_lat, result.avg_lng]);
     App.city = result;
-    App.cityPoly = L.geoJson(result.city_geometry).addTo(Map.map);
+    if (App.iface.getRadio('task') == 'view'){
+        App.cityPoly = L.geoJson(result.city_geometry).addTo(Map.map);
+    }
     App.iface.inputCityName.value = result.city_name;
     App.iface.inputCityLastname.value = result.city_lastname;
     App.iface.inputCityCountry.value = result.city_country;
@@ -354,7 +356,7 @@ App.saveChange = function(){
             App.showCity2(result);
             App.getList();
             App.createMarkersFromCity();
-            App.showTempPolygon();
+            App.showTempPolygon(App.boundaryMarkers);
         });
     }else{
         alert('Полигон не задан!');

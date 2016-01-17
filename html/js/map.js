@@ -65,5 +65,5 @@ Map.removeLayer = function(layer){
 
 Map.setCenter = function(center){
     Map.Center = center;
-    Map.map.setView(Map.Center, Map.zoom);
+    Map.map.setView(Map.Center, Map.map.getZoom());
 };
