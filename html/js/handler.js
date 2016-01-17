@@ -57,11 +57,7 @@ Handler.mapClick = function(e){
             Handler.app.point = null;
         }
         var point = {lat:e.latlng.lat, lng:e.latlng.lng};
-        var boundaryMarker = L.marker(L.latLng(point.lat, point.lng), {draggable:true, icon: Handler.app.iface.boundaryIcon}).addTo(Handler.app.map.map);
-        Handler.app.boundaryMarkers.push(boundaryMarker);
-        Handler.app.boundaryMarkers[Handler.app.boundaryMarkers.length - 1].on('dragend', function(e){
-            Handler.app.showTempPolygon(Handler.app.boundaryMarkers);
-        });
+        Handler.app.addBoundaryMarker(point);
         Handler.app.showTempPolygon(Handler.app.boundaryMarkers);
     }         
 };

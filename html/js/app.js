@@ -112,6 +112,8 @@ App.switchMode = function(){
     }else{
         document.getElementById('buttons').style.display = 'block';
         App.hideCityPolygon();
+        App.createMarkersFromCity();
+        App.showCityPolygon();
     }
 };
 
@@ -253,6 +255,7 @@ App.iface.destroyChildren = function(node){
 
 /**
  * отображение временного полигона на карте
+ * @param markers массив объектов маркеров границы
  * */
 App.showTempPolygon = function(markers){
     App.hideTempPolygon();
@@ -268,6 +271,37 @@ App.showTempPolygon = function(markers){
     console.log(JSON.stringify(App.tempPolygonGeoJSON));
     App.tempPolygon = L.geoJson(App.tempPolygonGeoJSON,{style:App.tempPolygonStyle}).addTo(Map.map);
     return true;
+};
+
+/**
+ * создание маркеров на основе GeoJSON текущего города
+ * */
+App.createMarkersFromCity = function(){
+    if (App.city != null){
+        if (App.city.city_geometry.type == 'Polygon'){
+            var coords = App.city.city_geometry.coordinates[0];
+        }else if (App.city.city_geometry.type == 'MultiPolygon'){
+            var coords = App.city.city_geometry.coordinates[0][0];
+        }else{
+            return;
+        }
+        for (var i = 0; i < coords.length; i++){
+            var point = {lat: coords[i][1], lng: coords[i][0]};
+            App.addBoundaryMarker(point);
+        }
+    }
+};
+
+/**
+ * добавление маркера границы на карту
+ * @param point объект точки вида {lat.lat, lng:lng}
+ * */
+App.addBoundaryMarker = function(point){
+    var boundaryMarker = L.marker(L.latLng(point.lat, point.lng), {draggable:true, icon: App.iface.boundaryIcon}).addTo(App.map.map);
+    App.boundaryMarkers.push(boundaryMarker);
+    App.boundaryMarkers[App.boundaryMarkers.length - 1].on('dragend', function(e){
+        App.showTempPolygon(App.boundaryMarkers);
+    });
 };
 
 /**
@@ -319,6 +353,8 @@ App.saveChange = function(){
             App.delBoundaryMarkers();
             App.showCity2(result);
             App.getList();
+            App.createMarkersFromCity();
+            App.showTempPolygon();
         });
     }else{
         alert('Полигон не задан!');
@@ -338,6 +374,8 @@ App.delCity = function(){
             App.hideCity();
             App.city = null;
             App.getList();
+            App.delBoundaryMarkers();
+            App.hideTempPolygon();
         });
     }else{
         alert('Населенный пункт не выбран!');
