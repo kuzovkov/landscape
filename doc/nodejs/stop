@@ -1,5 +1,0 @@
-#! /bin/sh
-while [ `ps -A | grep 'node' | wc -l` != 0 ]
-do 
-    killall node
-done 
