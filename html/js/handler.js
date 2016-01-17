@@ -30,7 +30,6 @@ Handler.btnDelMarkersClick = function(){
 };
     
 
-
 /**
 * обработка клика на карте
 **/

@@ -108,8 +108,10 @@ App.switchMode = function(){
         document.getElementById('buttons').style.display = 'none';
         App.delBoundaryMarkers();
         App.hideTempPolygon();
+        App.showCityPolygon();
     }else{
         document.getElementById('buttons').style.display = 'block';
+        App.hideCityPolygon();
     }
 };
 
@@ -172,8 +174,9 @@ App.showCity2 = function(result){
     App.iface.inputCityCountry.value = result.city_country;
 };
 
+
 /**
- * Скрыть границы города на карте 
+ * Скрыть границы города на карте и очистить текущий город
  **/
 App.hideCity = function(){
     if (App.cityPoly != null){
@@ -185,6 +188,29 @@ App.hideCity = function(){
     App.iface.inputCityLastname.value = "";
     App.iface.inputCityCountry.value = "";
 };
+
+
+/**
+ * Скрыть только полигон текущего города с карты
+ **/
+App.hideCityPolygon = function(){
+    if (App.cityPoly != null){
+        Map.map.removeLayer(App.cityPoly);
+        App.cityPoly = null;
+    }
+};
+
+
+/**
+ * Показать полигон текущего города на карте
+ **/
+App.showCityPolygon = function(){
+    if (App.cityPoly == null && App.city != null){
+        App.map.setCenter([App.city.avg_lat, App.city.avg_lng]);
+        App.cityPoly = L.geoJson(App.city.city_geometry).addTo(Map.map);
+    }
+};
+
 
 /**
  * Запрос списка городов
@@ -264,22 +290,30 @@ App.saveChange = function(){
     var lastname = App.iface.inputCityLastname.value;
     var country = App.iface.inputCityCountry.value;
     var geometry = null;
+    
+    if (name == '' || lastname == '' || country == ''){
+        alert('Заполните текстовые поля!');
+        return;
+    }
     var id = -1;
     if (App.tempPolygon != null && App.city != null){
         geometry = App.tempPolygonGeoJSON;
         id = App.city.id;
+        if (!confirm('Внести изменения в данные населенного пункта?')) return;
         Request.editCity(id, name, lastname, country, geometry, function(result){
             App.getCity();
         });
     }else if (App.city != null){
         geometry = App.city.city_geometry;
         id = App.city.id;
+        if (!confirm('Внести изменения в данные населенного пункта?')) return;
         Request.editCity(id, name, lastname, country, geometry, function(result){
             App.getCity();
         });
     }else if(App.tempPolygon != null){
         geometry = App.tempPolygonGeoJSON;
         App.iface.showElem(App.iface.preloader);
+        if (!confirm('Добавить населенный пункт?')) return;
         Request.addCity(name, lastname, country, geometry, function(result){
             App.hideTempPolygon();
             App.delBoundaryMarkers();
@@ -297,11 +331,15 @@ App.saveChange = function(){
  * Отправка запроса на сервер для удаления города
  * */
 App.delCity = function(){
+    if (!confirm('Удалить данные текущего населенного пункта?')) return;
     if (App.city != null){
         var id = App.city.id;
         Request.delCity(id, function(){
             App.hideCity();
+            App.city = null;
             App.getList();
         });
+    }else{
+        alert('Населенный пункт не выбран!');
     }
 };

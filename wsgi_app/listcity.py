@@ -28,7 +28,7 @@ def application(environ, start_response):
 def getListCity(db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
-    sql = "SELECT id, geometry, city_name, city_lastname, country, min_lat, min_lng, max_lat, max_lng FROM city" 
+    sql = "SELECT id, geometry, city_name, city_lastname, country, min_lat, min_lng, max_lat, max_lng FROM city ORDER BY city_name" 
     res = cur.execute(sql)
     citylist = []
     for rec in res:
