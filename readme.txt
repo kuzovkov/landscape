@@ -1,6 +1,6 @@
 УСТАНОВКА
 
-Редактор границ городов представляет собой веб-приложение, серверная часть которого реализована на языке Python
+Редактор объектов представляет собой веб-приложение, серверная часть которого реализована на языке Python 
 как WSGI приложение.
 
 ТРЕБОВАНИЯ
@@ -30,43 +30,43 @@
           
           <VirtualHost *:8080>
 
-                ServerName cityboundary.py
+                ServerName landscape.py
                 ServerAdmin webmaster@example.com
 
-                DocumentRoot /home/user1/www/cityboundary/html
+                DocumentRoot /home/user1/www/landscape/html
                     ErrorLog ${APACHE_LOG_DIR}/error.log
-                <Directory /home/user1/www/cityboundary/html>
+                <Directory /home/user1/www/landscape/html>
                     Order allow,deny
                     Allow from all
                 </Directory>
 
-                    WSGIScriptAlias /searchcity /home/user1/www/cityboundary/wsgi_app/searchcity.py
-                    WSGIScriptAlias /addcity /home/user1/www/cityboundary/wsgi_app/addcity.py
-                    WSGIScriptAlias /delcity /home/user1/www/cityboundary/wsgi_app/delcity.py
-                    WSGIScriptAlias /editcity /home/user1/www/cityboundary/wsgi_app/editcity.py
-                    WSGIScriptAlias /listcity /home/user1/www/cityboundary/wsgi_app/listcity.py
-                    WSGIScriptAlias /getcity /home/user1/www/cityboundary/wsgi_app/getcity.py
+                    WSGIScriptAlias /searchcity /home/user1/www/landscape/wsgi_app/search.py
+                    WSGIScriptAlias /addcity /home/user1/www/landscape/wsgi_app/add.py
+                    WSGIScriptAlias /delcity /home/user1/www/landscape/wsgi_app/del.py
+                    WSGIScriptAlias /editcity /home/user1/www/landscape/wsgi_app/edit.py
+                    WSGIScriptAlias /listcity /home/user1/www/landscape/wsgi_app/list.py
+                    WSGIScriptAlias /getcity /home/user1/www/landscape/wsgi_app/get.py
 
 
-                WSGIDaemonProcess cityboundary.py processes=2 threads=15 display-name=%{GROUP}
-                WSGIProcessGroup cityboundary.py
+                WSGIDaemonProcess landscape.py processes=2 threads=15 display-name=%{GROUP}
+                WSGIProcessGroup landscape.py
 
 
             </VirtualHost>
             
-        Директива  "DocumentRoot /home/user1/www/cityboundary/html" должна указывать на каталог "html"
+        Директива  "DocumentRoot /home/user1/www/landscape/html" должна указывать на каталог "html"
         
-        В директивах типа "WSGIScriptAlias /searchcity /home/user1/www/cityboundary/wsgi_app/searchcity.py"
+        В директивах типа "WSGIScriptAlias /searchcity /home/user1/www/landscape/wsgi_app/search.py"
         указывается URL при обращении по которому Apache будет вызывать wsgi приложение и путь к этому приложению
         Таких директив может быть не одна.
             
         Перезапускаем веб-сервер    "sudo service apache2 restart".
         
-    Для обращения к веб приложению через браузер добавляем в "/etc/hosts" строку "127.0.0.1   cityboundary.py"
+    Для обращения к веб приложению через браузер добавляем в "/etc/hosts" строку "127.0.0.1   landscape.py"
     В скриптах в каталоге "wsgi_app" в переменных DB_DIR и CITY_DB_FILE нужно указать
     путь и имя файла базы данных соответственно, например:
     
-        DB_DIR = '/home/user1/game1/db/'
-        CITY_DB_FILE = 'city.sqlite'
+        DB_DIR = '/home/www/landscape/base/'
+        CITY_DB_FILE = 'landscape.sqlite'
     
     Создание файла базы данных описано в файле "help(mk_citybase.py).txt" в каталоге "doc"
