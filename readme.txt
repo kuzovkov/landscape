@@ -40,12 +40,12 @@
                     Allow from all
                 </Directory>
 
-                    WSGIScriptAlias /searchcity /home/user1/www/landscape/wsgi_app/search.py
-                    WSGIScriptAlias /addcity /home/user1/www/landscape/wsgi_app/add.py
-                    WSGIScriptAlias /delcity /home/user1/www/landscape/wsgi_app/del.py
-                    WSGIScriptAlias /editcity /home/user1/www/landscape/wsgi_app/edit.py
-                    WSGIScriptAlias /listcity /home/user1/www/landscape/wsgi_app/list.py
-                    WSGIScriptAlias /getcity /home/user1/www/landscape/wsgi_app/get.py
+                    WSGIScriptAlias /search /home/user1/www/landscape/wsgi_app/search.py
+                    WSGIScriptAlias /add /home/user1/www/landscape/wsgi_app/add.py
+                    WSGIScriptAlias /del /home/user1/www/landscape/wsgi_app/del.py
+                    WSGIScriptAlias /edit /home/user1/www/landscape/wsgi_app/edit.py
+                    WSGIScriptAlias /list /home/user1/www/landscape/wsgi_app/list.py
+                    WSGIScriptAlias /get /home/user1/www/landscape/wsgi_app/get.py
 
 
                 WSGIDaemonProcess landscape.py processes=2 threads=15 display-name=%{GROUP}
@@ -66,7 +66,7 @@
     В скриптах в каталоге "wsgi_app" в переменных DB_DIR и CITY_DB_FILE нужно указать
     путь и имя файла базы данных соответственно, например:
     
-        DB_DIR = '/home/www/landscape/base/'
+        DB_DIR = '/home/user1/www/landscape/base/'
         CITY_DB_FILE = 'landscape.sqlite'
     
-    Создание файла базы данных описано в файле "help(mk_citybase.py).txt" в каталоге "doc"
+    Создание файла базы данных описано в файле "help(mk_landscapebase.py).txt" в каталоге "doc"

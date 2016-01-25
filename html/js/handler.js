@@ -9,7 +9,7 @@ Handler.init = function(app){
 /**
  * Отправка запроса на сервер для сохранения изменений в базу
  * */
-Handler.btnSaveCityClick = function(){
+Handler.btnSaveObjClick = function(){
     Handler.app.saveChange();
 };
 
@@ -17,8 +17,8 @@ Handler.btnSaveCityClick = function(){
 /**
  * удаление текущего города из базы
  **/    
-Handler.btnDelCityClick = function(){
-    Handler.app.delCity();
+Handler.btnDelObjClick = function(){
+    Handler.app.delObj();
 };
     
 /**
@@ -27,7 +27,7 @@ Handler.btnDelCityClick = function(){
 Handler.btnDelMarkersClick = function(){
     App.delBoundaryMarkers();
     App.hideTempPolygon();
-    App.hideCityPolygon();
+    App.hideObjPolygon();
 };
     
 
@@ -44,12 +44,12 @@ Handler.mapClick = function(e){
         Handler.app.point = L.marker(L.latLng(point.lat, point.lng), {draggable:true}).addTo(Handler.app.map.map);
         //clearAllNodes();
         //clearAllRoads();
-        Handler.app.searchCity(point);
+        Handler.app.searchObj(point);
         Handler.app.point.on('dragend',function(e){
             var point = {lat:0, lng: 0};
             point.lat = Handler.app.point.getLatLng().lat;
             point.lng = Handler.app.point.getLatLng().lng;
-            Handler.app.searchCity(point);
+            Handler.app.searchObj(point);
         });
         
     }else{

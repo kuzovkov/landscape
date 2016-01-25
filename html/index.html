@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Редактор границ городов</title>
+  <title>Редактор объектов</title>
   
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8" />
@@ -22,27 +22,27 @@
     <body>
 		<div class="panel grad2">
             
-            <h4 class="title">Редактор границ городов&nbsp;</h4>
+            <h4 class="title">Редактор объектов&nbsp;</h4>
             <div class="tasks" >
                 <input type="radio" name="task" value="view" checked/><label>Просмотр</label><br/>
                 <input type="radio" name="task" value="edit"/><label>Редактирование</label>
             </div>
             <div class="select">
-                <p>Список городов: </p>
-                <select id="city-list"></select>
+                <p>Список объектов: </p>
+                <select id="obj-list"></select>
             </div>
             <div id="buttons" class="buttons">
-                <button class="grad2" id="del-city">Удалить</button>
-                <button class="grad2" id="save-city">Сохранить</button>
+                <button class="grad2" id="del-obj">Удалить</button>
+                <button class="grad2" id="save-obj">Сохранить</button>
                 <button class="grad2" id="del-markers">Удалить маркеры</button>
             </div>
             <a href="help.html" class="helplink">Справка</a>
         </div>
         <div class="clr"></div>
 		<p class="name">
-            <input id="city-name" type="text" name="name" value="" placeholder="Name"/>&nbsp;
-            <input id="city-lastname" type="text" name="lastname" value="" placeholder="Lastname" />&nbsp;
-            <input id="city-country" type="text" name="country" value="" placeholder="Country"/>&nbsp;
+            <input id="obj-name" type="text" name="name" value="" placeholder="Name"/>&nbsp;
+            <input id="obj-subtype" type="text" name="lastname" value="" placeholder="Subtype" />&nbsp;
+            <input id="obj-country" type="text" name="country" value="" placeholder="Country"/>&nbsp;
 		</p>
 		<div id="map-block"></div>
 		

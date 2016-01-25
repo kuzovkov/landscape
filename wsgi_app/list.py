@@ -6,7 +6,7 @@ import time
 import os
 import math
 
-DB_DIR = '/home/www/landscape/base/'
+DB_DIR = '/home/user1/www/landscape/base/'
 DB_FILE = 'landscape.sqlite'
 
 
@@ -16,7 +16,7 @@ def application(environ, start_response):
     listobj = getListObject(db_file)
     if listobj != None:
         response = '{"obj_list":[' + ','.join(listobj) + ']}'
-        
+        print response
     else:
         response = '{"obj_list":[]}'
     response_headers = [('Content-type', 'text/html; charset=utf-8'), ('Access-Control-Allow-Origin', '*')]
@@ -40,11 +40,12 @@ def getListObject(db_file):
         min_lng = rec[6]
         max_lat = rec[7]
         max_lng = rec[8]
-        item = '{"incity":true, "city_name":"' + city_name + '", "city_lastname":"' + city_lastname + '","city_geometry":' + city_geometry + ', "city_country":"' + city_country + '", "id":' + str(id)+ ', "avg_lat":'+str((min_lat+max_lat)/2)+', "avg_lng":'+str((min_lng+max_lng)/2)+'}'
+        item = '{"res":true, "name":"' + name + '", "sub_type":"' + sub_type + '","geometry":' + geometry + ', "country":"' + country + '", "id":' + str(id)+ ', "avg_lat":'+str((min_lat+max_lat)/2)+', "avg_lng":'+str((min_lng+max_lng)/2)+'}'
         objlist.append(item);
     cur.close()
     conn.close()
     if len(objlist) == 0:
         return None
     else:
-        return citylist
+        print len(objlist)
+        return objlist
