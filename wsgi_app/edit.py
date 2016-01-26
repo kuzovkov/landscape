@@ -35,6 +35,17 @@ def application(environ, start_response):
     start_response(status, response_headers)
     return [response]
 
+#фильтрация строки
+def filterString(name):
+    if name.isalnum():
+        return name
+    char_list = []
+    for ch in name:
+        if ch.isalnum() or ch in [" ", "-"]:
+            char_list.append(ch)
+    name = "".join(char_list)
+    return name
+
 #редактирование объекта в базе
 def editObject(id, name, sub_type, country, geometry, db_file):
     conn = db.connect(DB_DIR + db_file)
@@ -48,6 +59,9 @@ def editObject(id, name, sub_type, country, geometry, db_file):
         min_lat = rec[1]
         max_lng = rec[2]
         max_lat = rec[3]
+    name = filterString(name)
+    if len(name) == 0:
+        return None
     sql = "UPDATE object SET name='"+name+"',sub_type='"+sub_type+"', country='"+country+"',geometry='"+geometry+"',min_lng="+str(min_lng)+",min_lat="+str(min_lat)+",max_lng="+str(max_lng)+",max_lat="+str(max_lat)+ " WHERE id=" + str(id)
     cur.execute(sql)
     conn.commit()

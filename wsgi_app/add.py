@@ -33,6 +33,17 @@ def application(environ, start_response):
     start_response(status, response_headers)
     return [response]
 
+#фильтрация строки
+def filterString(name):
+    if name.isalnum():
+        return name
+    char_list = []
+    for ch in name:
+        if ch.isalnum() or ch in [" ", "-"]:
+            char_list.append(ch)
+    name = "".join(char_list)
+    return name
+
 #добавление города в базу
 def addObject(name, sub_type, country, geometry, db_file):
     conn = db.connect(DB_DIR + db_file)
@@ -46,7 +57,9 @@ def addObject(name, sub_type, country, geometry, db_file):
         min_lat = rec[1]
         max_lng = rec[2]
         max_lat = rec[3]
-    print 'min_lng='+str(min_lng)
+    name = filterString(name)
+    if len(name) == 0:
+        return None
     sql = "INSERT INTO object (name, sub_type, geometry, min_lng, min_lat, max_lng, max_lat, country) VALUES('"+name+"', '"+sub_type+"', '"+geometry+"'," + str(min_lng) + "," + str(min_lat) + "," + str(max_lng) + "," + str(max_lat) + ", '" + country + "')"
     print sql
     cur.execute(sql)
