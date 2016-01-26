@@ -201,6 +201,11 @@ p.name input
     border-right: 1px solid #999; 
 }
 
+.select select
+{
+    width: 95%;
+}
+
 .border
 {
     border: 1px solid red;

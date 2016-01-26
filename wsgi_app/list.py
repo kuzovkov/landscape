@@ -16,7 +16,7 @@ def application(environ, start_response):
     listobj = getListObject(db_file)
     if listobj != None:
         response = '{"obj_list":[' + ','.join(listobj) + ']}'
-        print response
+        
     else:
         response = '{"obj_list":[]}'
     response_headers = [('Content-type', 'text/html; charset=utf-8'), ('Access-Control-Allow-Origin', '*')]
@@ -49,3 +49,17 @@ def getListObject(db_file):
     else:
         print len(objlist)
         return objlist
+
+
+   
+    
+def saveListToFile(filename, ls):
+    try:
+        f = open(filename, mode='w');
+    except IOError, e:
+        print "Can't open file: %s - %s" % (filename, e)
+        return
+    f.writelines(ls)
+    f.close()
+    
+    

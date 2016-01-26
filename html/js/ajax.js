@@ -40,7 +40,6 @@ var Ajax =
         XMLHttp.onreadystatechange = function(){
             if ( XMLHttp.readyState == 4 ){
                 if ( XMLHttp.status == 200 ){
-                    console.log(XMLHttp.responseText);
                     callback(JSON.parse(XMLHttp.responseText));
                 }
                 else{

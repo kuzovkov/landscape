@@ -158,7 +158,7 @@ App.showObj = function(result){
     App.Obj = result;
     App.ObjPoly = L.geoJson(result.geometry).addTo(Map.map);
     App.iface.inputObjName.value = result.name;
-    App.iface.inputObjLastname.value = result.sub_type;
+    App.iface.inputObjSubtype.value = result.sub_type;
     App.iface.inputObjCountry.value = result.country;
 };
 
@@ -174,7 +174,7 @@ App.showObj2 = function(result){
         App.ObjPoly = L.geoJson(result.geometry).addTo(Map.map);
     }
     App.iface.inputObjName.value = result.name;
-    App.iface.inputObjLastname.value = result.sub_type;
+    App.iface.inputObjSubtype.value = result.sub_type;
     App.iface.inputObjCountry.value = result.country;
 };
 
@@ -231,7 +231,7 @@ App.fillList = function(result){
     App.Obj_list = result.obj_list;
     App.iface.destroyChildren(App.iface.selectObjList);
     
-    for (var i = 0; i < result.Obj_list.length; i++){
+    for (var i = 0; i < result.obj_list.length; i++){
         var opt = document.createElement('option');
         opt.value = result.obj_list[i].id;
         opt.innerText = result.obj_list[i].name;

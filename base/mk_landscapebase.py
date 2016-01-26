@@ -20,6 +20,17 @@ def print_progress(message, count, size, index=None):
         sys.stdout.write("%s: %d%%  \r" % (message, progress))
         sys.stdout.flush()
 
+def filterString(name):
+    if name.isalnum():
+        return name
+    char_list = []
+    for ch in name:
+        if ch.isalnum() or ch in [" ", "-"]:
+            char_list.append(ch)
+    name = "".join(char_list)
+    return name
+
+
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 'vd:f:')
     # print optlist
@@ -50,10 +61,12 @@ for dat_file in dat_files:
     res = cur2.execute("select name, sub_type, AsGeoJSON(Geometry) as geometry from pg_landuse where name not NULL and Geometry not NULL")
     for row in res:
         obj_count += 1        
-        name = row[0].replace("'","")
+        name = filterString(row[0])        
         sub_type = row[1]
         geometry = row[2]
         country = dat_file.split('-')[0]
+        if len(name) == 0:
+            continue
         print 'Processing object: %s (%i)' % (name, obj_count)
         sql = "SELECT MbrMinX(GeomFromGeoJSON('"+ geometry +"')) as min_lng, MbrMinY(GeomFromGeoJSON('"+ geometry +"')) as min_lat, MbrMaxX(GeomFromGeoJSON('"+ geometry +"')) as max_lng, MbrMaxY(GeomFromGeoJSON('"+ geometry +"')) as max_lat"
         res = cur.execute(sql)
@@ -70,10 +83,12 @@ for dat_file in dat_files:
     res = cur2.execute("select name, sub_type, AsGeoJSON(Geometry) as geometry from pg_natural where name not NULL and Geometry not NULL")
     for row in res:
         obj_count += 1        
-        name = row[0].replace("'","")
+        name = filterString(row[0])
         sub_type = row[1]
         geometry = row[2]
         country = dat_file.split('-')[0]
+        if len(name) == 0:
+            continue
         print 'Processing object: %s (%i)' % (name, obj_count)
         sql = "SELECT MbrMinX(GeomFromGeoJSON('"+ geometry +"')) as min_lng, MbrMinY(GeomFromGeoJSON('"+ geometry +"')) as min_lat, MbrMaxX(GeomFromGeoJSON('"+ geometry +"')) as max_lng, MbrMaxY(GeomFromGeoJSON('"+ geometry +"')) as max_lat"
         res = cur.execute(sql)
