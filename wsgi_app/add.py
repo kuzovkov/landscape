@@ -6,7 +6,7 @@ import time
 import os
 import math
 
-DB_DIR = '/home/user1/www/landscape/base/'
+DB_DIR = '/var/www/landscape/base/'
 DB_FILE = 'landscape.sqlite'
 
 
