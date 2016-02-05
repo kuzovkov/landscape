@@ -69,4 +69,4 @@
         DB_DIR = '/home/user1/www/landscape/base/'
         CITY_DB_FILE = 'landscape.sqlite'
     
-    Создание файла базы данных описано в файле "help(mk_landscapebase.py).txt" в каталоге "doc"
+    Создание файла базы данных описано в файле "help(mk_landscapebase.py).txt" в каталоге "base"
