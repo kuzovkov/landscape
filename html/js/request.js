@@ -1,7 +1,7 @@
 /** модуль запросов к серверу **/
 
 var Request = {
-    server: 'http://landscape.py',
+    server: 'http://landscapeeditor.loc:8080',
     
      /**
     * определение принадлежности точки городу
