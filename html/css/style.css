@@ -153,9 +153,11 @@ hr
     display: inline-block;
 }
 
-p.name input
+.name input.obj-name
 {
-    width: 30%;
+    width: 20%;
+    float: left;
+    margin-left: 20px;
 }
 
 .panel button
@@ -252,5 +254,28 @@ h4.title
 {
     color: #333;
 }
+
+.name
+{
+    margin-top:30px;
+}
+
+.name select
+{
+    float: left;
+    margin-left: 20px;
+}
+
+.obj-scale
+{
+    width: 400px;
+    display: block;
+    float: left;
+    margin-left: 20px;
+    margin-top: -20px;
+    margin-bottom: 10px;
+    font-size: 0.8em;
+}
+
 
 

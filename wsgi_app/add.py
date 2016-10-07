@@ -29,10 +29,11 @@ def application(environ, start_response):
     sub_type = data[1]
     country = data[2]
     geometry = data[3]
+    scale = data[4]
     db_file = DB_FILE
-    res = addObject(name, sub_type, country, geometry, db_file)
+    res = addObject(name, sub_type, country, geometry, scale, db_file)
     if res != None:
-        response = '{"result":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+'}'
+        response = '{"result":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+', "scale":'+str(res[7])+'}'
     else:
         response = '{"result":false}'
     response_headers = [('Content-type', 'text/html; charset=utf-8'), ('Access-Control-Allow-Origin', '*')]
@@ -51,7 +52,7 @@ def filterString(name):
     return name
 
 #добавление города в базу
-def addObject(name, sub_type, country, geometry, db_file):
+def addObject(name, sub_type, country, geometry, scale, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
     sql = "SELECT MbrMinX(GeomFromGeoJSON('"+ geometry +"')) as min_lng, MbrMinY(GeomFromGeoJSON('"+ geometry +"')) as min_lat, MbrMaxX(GeomFromGeoJSON('"+ geometry +"')) as max_lng, MbrMaxY(GeomFromGeoJSON('"+ geometry +"')) as max_lat"
@@ -66,11 +67,11 @@ def addObject(name, sub_type, country, geometry, db_file):
     name = filterString(name)
     if len(name) == 0:
         return None
-    sql = "INSERT INTO object (name, sub_type, geometry, min_lng, min_lat, max_lng, max_lat, country) VALUES('"+name+"', '"+sub_type+"', '"+geometry+"'," + str(min_lng) + "," + str(min_lat) + "," + str(max_lng) + "," + str(max_lat) + ", '" + country + "')"
+    sql = "INSERT INTO object (name, sub_type, geometry, min_lng, min_lat, max_lng, max_lat, country, scale) VALUES('"+name+"', '"+sub_type+"', '"+geometry+"'," + str(min_lng) + "," + str(min_lat) + "," + str(max_lng) + "," + str(max_lat) + ", '" + country + "'," + str(scale) +")"
     print sql
     cur.execute(sql)
     conn.commit()
-    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng FROM city WHERE name='" + name +"'"
+    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale FROM city WHERE name='" + name +"'"
     id = -1
     res = cur.execute(sql)
     for rec in res:
@@ -83,7 +84,8 @@ def addObject(name, sub_type, country, geometry, db_file):
         min_lng = rec[6]
         max_lat = rec[7]
         max_lng = rec[8]
+        scale = rec[9]
     if id == -1:
         return None
     else:
-        return (name, sub_type, geometry, country, id, (min_lat+max_lat)/2, (min_lng+max_lng)/2)
+        return (name, sub_type, geometry, country, id, (min_lat+max_lat)/2, (min_lng+max_lng)/2, scale)

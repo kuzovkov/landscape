@@ -33,7 +33,7 @@ def application(environ, start_response):
 def getListObject(db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
-    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng FROM object ORDER BY name" 
+    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale FROM object ORDER BY name"
     res = cur.execute(sql)
     objlist = []
     for rec in res:
@@ -46,7 +46,8 @@ def getListObject(db_file):
         min_lng = rec[6]
         max_lat = rec[7]
         max_lng = rec[8]
-        item = '{"res":true, "name":"' + name + '", "sub_type":"' + sub_type + '","geometry":' + geometry + ', "country":"' + country + '", "id":' + str(id)+ ', "avg_lat":'+str((min_lat+max_lat)/2)+', "avg_lng":'+str((min_lng+max_lng)/2)+'}'
+        scale = rec[9]
+        item = '{"res":true, "name":"' + name + '", "sub_type":"' + sub_type + '","geometry":' + geometry + ', "country":"' + country + '", "id":' + str(id)+ ', "avg_lat":'+str((min_lat+max_lat)/2)+', "avg_lng":'+str((min_lng+max_lng)/2)+', "scale":'+str(scale)+'}'
         objlist.append(item);
     cur.close()
     conn.close()

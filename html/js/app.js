@@ -19,6 +19,9 @@ App.tempPolygonStyle = {
     "opaObj": 0.65
 };
 
+App.counties = {'RUS':'Россия', 'UKR':'Украина', 'DEU':'Германия', 'POL':'Польша', 'ukraine': 'Украина'}; /*список стран*/
+App.lastCountry = 'ukraine';
+
 App.boundaryMarkers = [];//массив для хранения объектов маркеров обозначающих границу
 App.tempPolygonGeoJSON = null; //объект для хранения GeoJSON временного полигона
 App.tempPolygon = null; //объект для хранения временного полигона
@@ -32,13 +35,14 @@ App.init = function(){
     App.iface.btnDelMarkers = document.getElementById('del-markers');
     App.iface.inputObjName = document.getElementById('obj-name');
     App.iface.inputObjSubtype = document.getElementById('obj-subtype');
-    App.iface.inputObjCountry = document.getElementById('obj-country');
+    App.iface.selectObjCountry = document.getElementById('obj-country');
     App.iface.selectObjList = document.getElementById('obj-list');
     App.iface.btnSaveObj.onclick = Handler.btnSaveObjClick;
     App.iface.btnDelObj.onclick = Handler.btnDelObjClick;
     App.iface.btnDelMarkers.onclick = Handler.btnDelMarkersClick;
     App.iface.selectObjList.onchange = App.getObj;
     App.map.addListener('click', Handler.mapClick);
+    App.iface.selectObjCountry.onchange = App.changeCountry;
     App.iface.addRadioListener('task', App.switchMode);
     App.switchMode();
     App.iface.preloader = document.getElementById('preloader');
@@ -101,6 +105,51 @@ App.iface.addRadioListener = function(name, handler){
 };
 
 
+/**
+ * Установка чекбоксов переключателя масштаба
+ * @param scale
+ */
+App.iface.setScaleCheckboxs = function(scale){
+    var input_regiment = document.getElementById('scale-regiment');
+    var input_brigade = document.getElementById('scale-brigade');
+    var input_division = document.getElementById('scale-division');
+    input_regiment.checked = false;
+    input_brigade.checked = false;
+    input_division.checked = false;
+    if (scale != null){
+        if (scale.toString()[0] == '1') input_regiment.checked = true;
+        if (scale.toString()[1] == '1') input_brigade.checked = true;
+        if (scale.toString()[2] == '1') input_division.checked = true;
+    }
+
+}
+
+/**
+ * Получение масштаба из чекбоксов масштаба
+ * @return scale
+ */
+App.iface.getScaleFromCheckboxes = function(){
+    var input_regiment = document.getElementById('scale-regiment');
+    var input_brigade = document.getElementById('scale-brigade');
+    var input_division = document.getElementById('scale-division');
+    var scale = 0;
+    if(input_regiment.checked) scale += 1;
+    if (input_brigade.checked) scale += 10;
+    if (input_division.checked) scale += 100;
+    return scale;
+}
+
+
+
+/**
+ * *обработчик изменения селекта со страной
+ */
+App.changeCountry = function(){
+    App.lastCountry = App.iface.selectObjCountry.value;
+    App.fillList(App);
+
+}
+
 App.switchMode = function(){
     var radio = App.iface.getRadio('task');
     //console.log(radio);
@@ -156,10 +205,12 @@ App.getObj = function(){
 App.showObj = function(result){
     App.hideObj();
     App.Obj = result;
+    //console.log(result);
     App.ObjPoly = L.geoJson(result.geometry).addTo(Map.map);
     App.iface.inputObjName.value = result.name;
     App.iface.inputObjSubtype.value = result.sub_type;
-    App.iface.inputObjCountry.value = result.country;
+    App.fillCountriesList(App.Obj_list);
+    App.iface.setScaleCheckboxs(result.scale);
 };
 
 /**
@@ -175,7 +226,8 @@ App.showObj2 = function(result){
     }
     App.iface.inputObjName.value = result.name;
     App.iface.inputObjSubtype.value = result.sub_type;
-    App.iface.inputObjCountry.value = result.country;
+    App.fillCountriesList(App.Obj_list);
+    App.iface.setScaleCheckboxs(result.scale);
 };
 
 
@@ -190,7 +242,8 @@ App.hideObj = function(){
     }
     App.iface.inputObjName.value = "";
     App.iface.inputObjSubtype.value = "";
-    App.iface.inputObjCountry.value = "";
+    App.fillCountriesList(App.Obj_list);
+    App.iface.setScaleCheckboxs(null);
 };
 
 
@@ -220,6 +273,7 @@ App.showObjPolygon = function(){
  * Запрос списка объектов
  **/
 App.getList = function(){
+    App.iface.showElem(App.iface.preloader);
     Request.getListObj(App.fillList);
 };
 
@@ -227,9 +281,10 @@ App.getList = function(){
  * Заполнение списка объектов
  * */
 App.fillList = function(result){
-    
+    App.iface.hideElem(App.iface.preloader);
     App.Obj_list = result.obj_list;
     App.iface.destroyChildren(App.iface.selectObjList);
+    App.fillCountriesList(App.Obj_list);
     
     for (var i = 0; i < result.obj_list.length; i++){
         var opt = document.createElement('option');
@@ -323,11 +378,12 @@ App.hideTempPolygon = function(){
  * */
 App.saveChange = function(){
     var name = App.iface.inputObjName.value;
-    var lastname = App.iface.inputObjSubtype.value;
-    var country = App.iface.inputObjCountry.value;
+    var sub_type = App.iface.inputObjSubtype.value;
+    var country = App.iface.selectObjCountry.value;
+    var scale = App.iface.getScaleFromCheckboxes();
     var geometry = null;
     
-    if (name == '' || lastname == '' || country == ''){
+    if (name == '' || sub_type == '' || country == ''){
         alert('Заполните текстовые поля!');
         return;
     }
@@ -336,21 +392,21 @@ App.saveChange = function(){
         geometry = App.tempPolygonGeoJSON;
         id = App.Obj.id;
         if (!confirm('Внести изменения в данные объекта?')) return;
-        Request.editObj(id, name, sub_type, country, geometry, function(result){
+        Request.editObj(id, name, sub_type, country, geometry, scale, function(result){
             App.getObj();
         });
     }else if (App.Obj != null){
         geometry = App.Obj.Obj_geometry;
         id = App.Obj.id;
         if (!confirm('Внести изменения в данные объекта?')) return;
-        Request.editObj(id, name, sub_type, country, geometry, function(result){
+        Request.editObj(id, name, sub_type, country, geometry, scale, function(result){
             App.getObj();
         });
     }else if(App.tempPolygon != null){
         geometry = App.tempPolygonGeoJSON;
         App.iface.showElem(App.iface.preloader);
         if (!confirm('Добавить объект?')) return;
-        Request.addObj(name, sub_type, country, geometry, function(result){
+        Request.addObj(name, sub_type, country, geometry, scale, function(result){
             App.hideTempPolygon();
             App.delBoundaryMarkers();
             App.showObj2(result);
@@ -382,4 +438,30 @@ App.delObj = function(){
     }else{
         alert('Объект не выбран!');
     }
+};
+
+/**
+ * заполнение списка стран
+ */
+App.fillCountriesList = function(obj_list){
+    //console.log(JSON.stringify(obj_list));
+    var countries = {};
+    var select = document.getElementById('obj-country');
+    App.iface.destroyChildren(select);
+    var country_id = (App.Obj != null)? App.Obj.country : App.lastCountry;
+    if (App.Obj_list && obj_list.length > 0){
+        for(var i = 0; i < obj_list.length; i++){
+            if (countries[obj_list[i].country]) continue;
+            var opt = document.createElement('option');
+            opt.value = obj_list[i].country;
+            opt.innerText = App.counties[obj_list[i].country];
+            opt.textContent = App.counties[obj_list[i].country];
+            if (obj_list[i].country == country_id){
+                opt.selected = 'selected';
+            }
+            select.appendChild(opt);
+            countries[obj_list[i].country] = true;
+        }
+    }
+
 };

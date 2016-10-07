@@ -12,7 +12,7 @@
 	<!--<script src="js/lib/leaflet.js"></script>-->
 	<script src="js/lib/leaflet-providers.js"></script>
 	<script src="js/lib/google_tiles.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script type="text/javascript" src="js/ajax.js"></script>
     <script type="text/javascript" src="js/request.js"></script>
 	<script type="text/javascript" src="js/helper.js"></script>
@@ -39,11 +39,19 @@
             <a href="help.html" class="helplink">Справка</a>
         </div>
         <div class="clr"></div>
-		<p class="name">
-            <input id="obj-name" type="text" name="name" value="" placeholder="Name"/>&nbsp;
-            <input id="obj-subtype" type="text" name="lastname" value="" placeholder="Subtype" />&nbsp;
-            <input id="obj-country" type="text" name="country" value="" placeholder="Country"/>&nbsp;
-		</p>
+		<div class="name">
+            <input id="obj-name" type="text" name="name" value="" placeholder="Name" class="obj-name"/>&nbsp;
+            <input id="obj-subtype" type="text" name="subtype" value="" placeholder="Subtype" class="obj-name"/>&nbsp;
+            <select id="obj-country" name="country"></select>&nbsp;>&nbsp;
+            <div class="obj-scale grad2">
+                <fieldset >
+                    <legend>Масштаб</legend>
+                    Полк <input type="checkbox" name="regiment" id="scale-regiment" value="1"/>&nbsp;
+                    Бригада <input type="checkbox" name="brigade" id="scale-brigade" value="10"/>&nbsp;
+                    Дивизия<input type="checkbox" name="division" id="scale-division" value="100"/>&nbsp;
+                </fieldset>
+            </div>
+		</div>
 		<div id="map-block"></div>
 		
 		

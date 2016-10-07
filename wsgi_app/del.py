@@ -37,7 +37,7 @@ def application(environ, start_response):
 def delObject(id, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
-    sql = "DELETE FROM city WHERE id=" + str(id)
+    sql = "DELETE FROM object WHERE id=" + str(id)
     res = cur.execute(sql)
     conn.commit()
     cur.close()
