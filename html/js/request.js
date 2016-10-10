@@ -46,8 +46,8 @@ var Request = {
     /**
      * редактирование записи о городе
      * */
-    editObj: function(id, name, lastname, country, geometry, callback){
-        var params = 'data=' + [id, name, lastname, country, JSON.stringify(geometry)].join('|');
+    editObj: function(id, name, lastname, country, geometry, scale, callback){
+        var params = 'data=' + [id, name, lastname, country, JSON.stringify(geometry), scale].join('|');
         console.log(params);
         var url = Request.server+'/edit';
         Ajax.sendRequest('POST', url, params, function(result) {
@@ -58,8 +58,8 @@ var Request = {
      /**
      * создание записи о городе
      * */
-    addObj: function(name, lastname, country, geometry, callback){
-        var params = 'data=' + [name, lastname, country, JSON.stringify(geometry)].join('|');
+    addObj: function(name, lastname, country, geometry, scale, callback){
+        var params = 'data=' + [name, lastname, country, JSON.stringify(geometry), scale].join('|');
         var url = Request.server+'/add';
         Ajax.sendRequest('POST', url, params, function(result) {
             callback(result);

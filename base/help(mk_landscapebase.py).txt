@@ -1,0 +1,33 @@
+СПРАВКА ПО СОЗДАНИЮ БАЗЫ ОБЪЕКТОВ ЛАНДШАФТА 
+
+ТРЕБОВАНИЯ:
+
+ОС Ubuntu 14.04
+spatialite_osm_map - утилита из пакета spatialite tools (https://www.gaia-gis.it/fossil/spatialite-tools/index)
+Веб-сервер Apache 2.4
+Python 2.7.xx - обычно уже установлен в системе
+
+
+ПОРЯДОК СОЗДАНИЯ БАЗЫ ОБЪЕКТОВ ЛАНДШАФТА:
+
+1. Скачиваем файл с OSM данными в .pbf формате интересующего нас региона с http://download.geofabrik.de/:
+	Например: wget http://download.geofabrik.de/europe/ukraine-latest.osm.pbf
+	
+2. Создаем базу данных spatialite с помощью утилиты spatialite_osm_map:
+	spatialite_osm_map -o ukraine-latest.osm.pbf.pbf -d ukraine-latest.osm.pbf.sqlite
+	
+3. Пункты 1 и 2 можно повторить если нужны данные по более чем одному региону
+	Полученные файлы баз данных нужно поместить в отдельный каталог
+	Запустить скрипт для извлечения данных об объектах ландшафта:
+	 mk_landscapebase.py [-v] -d <dat_files_dir> -f <db_file>, где
+	 <dat_files_dir> - каталог куда помещены файлы баз данных, созданные в пункте 2.
+	 <db_file> - имя создаваемого файла базы объектов ландшафта
+	 
+
+
+
+
+
+
+
+
