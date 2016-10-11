@@ -20,8 +20,9 @@ App.tempPolygonStyle = {
 };
 
 App.counties = {'RUS':'Россия', 'UKR':'Украина', 'DEU':'Германия', 'POL':'Польша', 'ukraine': 'Украина'}; /*список стран*/
+App.subtypes = {'forest':'Лес', 'field':'Поле', 'hills':'Холмы', 'mounts':'Горы', 'swamp':'Болото','desert':'Пустыня'};
 App.lastCountry = 'ukraine';
-
+App.lastSubtype = 'forest';
 App.boundaryMarkers = [];//массив для хранения объектов маркеров обозначающих границу
 App.tempPolygonGeoJSON = null; //объект для хранения GeoJSON временного полигона
 App.tempPolygon = null; //объект для хранения временного полигона
@@ -34,7 +35,8 @@ App.init = function(){
     App.iface.btnSaveObj = document.getElementById('save-obj');
     App.iface.btnDelMarkers = document.getElementById('del-markers');
     App.iface.inputObjName = document.getElementById('obj-name');
-    App.iface.inputObjSubtype = document.getElementById('obj-subtype');
+    App.iface.inputObjEngName = document.getElementById('obj-eng-name');
+    App.iface.selectObjSubtype = document.getElementById('obj-subtype');
     App.iface.selectObjCountry = document.getElementById('obj-country');
     App.iface.selectObjList = document.getElementById('obj-list');
     App.iface.btnSaveObj.onclick = Handler.btnSaveObjClick;
@@ -150,6 +152,13 @@ App.changeCountry = function(){
 
 }
 
+/**
+ * *обработчик изменения селекта с типом
+ */
+App.changeSubtype = function(){
+    App.lastSubtype = App.iface.selectObjSubtype.value;
+}
+
 App.switchMode = function(){
     var radio = App.iface.getRadio('task');
     //console.log(radio);
@@ -208,7 +217,8 @@ App.showObj = function(result){
     //console.log(result);
     App.ObjPoly = L.geoJson(result.geometry).addTo(Map.map);
     App.iface.inputObjName.value = result.name;
-    App.iface.inputObjSubtype.value = result.sub_type;
+    App.iface.inputObjEngName.value = result.eng_name;
+    App.fillSubTypeList(App.Obj_list);
     App.fillCountriesList(App.Obj_list);
     App.iface.setScaleCheckboxs(result.scale);
 };
@@ -225,7 +235,8 @@ App.showObj2 = function(result){
         App.ObjPoly = L.geoJson(result.geometry).addTo(Map.map);
     }
     App.iface.inputObjName.value = result.name;
-    App.iface.inputObjSubtype.value = result.sub_type;
+    App.iface.inputObjEngName.value = result.eng_name;
+    App.fillSubTypeList(App.Obj_list);
     App.fillCountriesList(App.Obj_list);
     App.iface.setScaleCheckboxs(result.scale);
 };
@@ -241,7 +252,8 @@ App.hideObj = function(){
         App.ObjPoly = null;
     }
     App.iface.inputObjName.value = "";
-    App.iface.inputObjSubtype.value = "";
+    App.iface.inputObjEngName.value = "";
+    App.fillSubTypeList(App.Obj_list);
     App.fillCountriesList(App.Obj_list);
     App.iface.setScaleCheckboxs(null);
 };
@@ -285,6 +297,7 @@ App.fillList = function(result){
     App.Obj_list = result.obj_list;
     App.iface.destroyChildren(App.iface.selectObjList);
     App.fillCountriesList(App.Obj_list);
+    App.fillSubTypeList(App.Obj_list);
     
     for (var i = 0; i < result.obj_list.length; i++){
         var opt = document.createElement('option');
@@ -378,12 +391,13 @@ App.hideTempPolygon = function(){
  * */
 App.saveChange = function(){
     var name = App.iface.inputObjName.value;
-    var sub_type = App.iface.inputObjSubtype.value;
+    var eng_name = App.iface.inputObjEngName.value;
+    var sub_type = App.iface.selectObjSubtype.value;
     var country = App.iface.selectObjCountry.value;
     var scale = App.iface.getScaleFromCheckboxes();
     var geometry = null;
     
-    if (name == '' || sub_type == '' || country == ''){
+    if (name == '' || sub_type == '' || country == '' || eng_name == ''){
         alert('Заполните текстовые поля!');
         return;
     }
@@ -392,21 +406,21 @@ App.saveChange = function(){
         geometry = App.tempPolygonGeoJSON;
         id = App.Obj.id;
         if (!confirm('Внести изменения в данные объекта?')) return;
-        Request.editObj(id, name, sub_type, country, geometry, scale, function(result){
+        Request.editObj(id, name, sub_type, country, geometry, scale, eng_name, function(result){
             App.getObj();
         });
     }else if (App.Obj != null){
         geometry = App.Obj.Obj_geometry;
         id = App.Obj.id;
         if (!confirm('Внести изменения в данные объекта?')) return;
-        Request.editObj(id, name, sub_type, country, geometry, scale, function(result){
+        Request.editObj(id, name, sub_type, country, geometry, scale, eng_name, function(result){
             App.getObj();
         });
     }else if(App.tempPolygon != null){
         geometry = App.tempPolygonGeoJSON;
         App.iface.showElem(App.iface.preloader);
         if (!confirm('Добавить объект?')) return;
-        Request.addObj(name, sub_type, country, geometry, scale, function(result){
+        Request.addObj(name, sub_type, country, geometry, scale, eng_name, function(result){
             App.hideTempPolygon();
             App.delBoundaryMarkers();
             App.showObj2(result);
@@ -440,6 +454,57 @@ App.delObj = function(){
     }
 };
 
+
+/**
+ * заполнение списка подтипов
+ */
+App.fillSubTypeList = function(obj_list){
+    //console.log(JSON.stringify(obj_list));
+    var subtypes = {};
+    var select = document.getElementById('obj-subtype');
+    App.iface.destroyChildren(select);
+    var subtype = (App.Obj != null)? App.Obj.subtype : App.lastSubtype;
+
+    /*заполнение списка типами заданными жестко в коде*/
+    for(var key in App.subtypes){
+        if (subtypes[key]) continue;
+        var opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = App.subtypes[key];
+        opt.textContent = App.subtypes[key];
+
+        if (key == subtype){
+            opt.selected = 'selected';
+        }
+        select.appendChild(opt);
+        subtypes[key] = true;
+    }
+
+    /*заполнение списка типами полученными из базы*/
+    if (App.Obj_list && obj_list.length > 0){
+        for(var i = 0; i < obj_list.length; i++){
+            if (subtypes[obj_list[i].sub_type]) continue;
+            var opt = document.createElement('option');
+            opt.value = obj_list[i].sub_type;
+            if (App.subtypes[obj_list[i].sub_type] != undefined){
+                opt.innerText = App.subtypes[obj_list[i].sub_type];
+                opt.textContent = App.subtypes[obj_list[i].sub_type];
+            }else{
+                opt.innerText = obj_list[i].sub_type;
+                opt.textContent = obj_list[i].sub_type;
+            }
+
+            if (obj_list[i].sub_type == subtype){
+                opt.selected = 'selected';
+            }
+            select.appendChild(opt);
+            subtypes[obj_list[i].sub_type] = true;
+        }
+    }
+
+};
+
+
 /**
  * заполнение списка стран
  */
@@ -449,13 +514,36 @@ App.fillCountriesList = function(obj_list){
     var select = document.getElementById('obj-country');
     App.iface.destroyChildren(select);
     var country_id = (App.Obj != null)? App.Obj.country : App.lastCountry;
+
+    /*заполнение списка странами заданными жестко в коде*/
+    for(var key in App.counties){
+        if (countries[key]) continue;
+        var opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = App.counties[key];
+        opt.textContent = App.counties[key];
+
+        if (key == country_id){
+            opt.selected = 'selected';
+        }
+        select.appendChild(opt);
+        countries[key] = true;
+    }
+
+    /*заполнение списка странами полученными из базы*/
     if (App.Obj_list && obj_list.length > 0){
         for(var i = 0; i < obj_list.length; i++){
             if (countries[obj_list[i].country]) continue;
             var opt = document.createElement('option');
             opt.value = obj_list[i].country;
-            opt.innerText = App.counties[obj_list[i].country];
-            opt.textContent = App.counties[obj_list[i].country];
+            if (App.counties[obj_list[i].country] != undefined){
+                opt.innerText = App.counties[obj_list[i].country];
+                opt.textContent = App.counties[obj_list[i].country];
+            }else{
+                opt.innerText = obj_list[i].country;
+                opt.textContent = obj_list[i].country;
+            }
+
             if (obj_list[i].country == country_id){
                 opt.selected = 'selected';
             }
