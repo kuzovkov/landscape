@@ -27,8 +27,7 @@ def application(environ, start_response):
     res = searchObject(point_lat, point_lng, db_file)
     print res
     if res != None:
-        response = '{"res":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+', "scale":'+str(res[7])+'}'
-		
+        response = '{"res":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+', "scale":'+str(res[7])+', "eng_name":"'+str(res[8])+'"}'
     else:
         response = '{"res":false}'
     response_headers = [('Content-type', 'text/html; charset=utf-8'), ('Access-Control-Allow-Origin', '*')]
@@ -39,7 +38,7 @@ def application(environ, start_response):
 def searchObject(point_lat, point_lng, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
-    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale FROM object WHERE min_lng <= " + str(point_lng) + " AND min_lat <= " + str(point_lat) + " AND max_lng  >= " + str(point_lng) + " AND max_lat >= " + str(point_lat)
+    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale, eng_name FROM object WHERE min_lng <= " + str(point_lng) + " AND min_lat <= " + str(point_lat) + " AND max_lng  >= " + str(point_lng) + " AND max_lat >= " + str(point_lat)
     id = -1
     res = cur.execute(sql)
     for rec in res:
@@ -53,6 +52,7 @@ def searchObject(point_lat, point_lng, db_file):
         max_lat = rec[7]
         max_lng = rec[8]
         scale = rec[9]
+        eng_name = rec[10].encode('utf-8')
         point_geometry = '{"type":"Point","coordinates":[' + str(point_lng) + ',' + str(point_lat) + ']}'
         if id != -1:
             sql = "SELECT Intersects(GeomFromGeoJSON('" + geometry + "'),GeomFromGeoJSON('" + point_geometry + "'))"
@@ -64,7 +64,7 @@ def searchObject(point_lat, point_lng, db_file):
                 if in_obj == 1:
                     cur.close()
                     conn.close()
-                    return (name, sub_type, geometry, country, id, (min_lat + max_lat) / 2, (min_lng + max_lng) / 2, scale)
+                    return (name, sub_type, geometry, country, id, (min_lat + max_lat) / 2, (min_lng + max_lng) / 2, scale, eng_name)
 
     cur.close()
     conn.close()

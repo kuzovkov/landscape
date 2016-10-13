@@ -26,15 +26,17 @@ def application(environ, start_response):
     d = parse_qs(request_body)
     data = d['data'][0].split('|')
     id = int(data[0]) 
-    name = data[1]
+    name = data[1].decode('utf-8')
+    #print 'name=%s' % name.encode('utf-8')
     sub_type = data[2]
     country = data[3]
     geometry = data[4]
     scale = data[5]
+    eng_name = data[6]
     db_file = DB_FILE
-    res = editObject(id, name, sub_type, country, geometry, scale, db_file)
+    res = editObject(id, name, sub_type, country, geometry, scale, eng_name, db_file)
     if res != None:
-        response = '{"result":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+', "scale":'+str(res[7])+'}'
+        response = '{"result":true, "name":"' + res[0] + '", "sub_type":"' + res[1] + '","geometry":' + res[2] + ', "country":"' + res[3] + '", "id":' + str(res[4])+ ', "avg_lat":'+str(res[5])+', "avg_lng":'+str(res[6])+', "scale":'+str(res[7])+', "eng_name":"'+str(res[8])+'"}'
         #response = '{"incity":true, "city_name":"' + city[0] + '", "city_lastname":"' + city[1] + '"}'
     else:
         response = '{"result":false}'
@@ -54,7 +56,7 @@ def filterString(name):
     return name
 
 #редактирование объекта в базе
-def editObject(id, name, sub_type, country, geometry, scale, db_file):
+def editObject(id, name, sub_type, country, geometry, scale, eng_name, db_file):
     conn = db.connect(DB_DIR + db_file)
     cur = conn.cursor()
     sql = "SELECT MbrMinX(GeomFromGeoJSON('"+ geometry +"')) as min_lng, MbrMinY(GeomFromGeoJSON('"+ geometry +"')) as min_lat, MbrMaxX(GeomFromGeoJSON('"+ geometry +"')) as max_lng, MbrMaxY(GeomFromGeoJSON('"+ geometry +"')) as max_lat"
@@ -69,10 +71,10 @@ def editObject(id, name, sub_type, country, geometry, scale, db_file):
     name = filterString(name)
     if len(name) == 0:
         return None
-    sql = "UPDATE object SET name='"+name+"',sub_type='"+sub_type+"', country='"+country+"',geometry='"+geometry+"',min_lng="+str(min_lng)+",min_lat="+str(min_lat)+",max_lng="+str(max_lng)+",max_lat="+str(max_lat)+ ",scale="+str(scale)+ " WHERE id=" + str(id)
+    sql = "UPDATE object SET name='"+name+"',sub_type='"+sub_type+"', country='"+country+"',geometry='"+geometry+"',min_lng="+str(min_lng)+",min_lat="+str(min_lat)+",max_lng="+str(max_lng)+",max_lat="+str(max_lat)+ ",scale="+str(scale)+ ",eng_name='"+eng_name+"' WHERE id=" + str(id)
     cur.execute(sql)
     conn.commit()
-    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale FROM city WHERE id=" + str(id)
+    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale, eng_name FROM object WHERE id=" + str(id)
     id = -1
     res = cur.execute(sql)
     for rec in res:
@@ -86,7 +88,8 @@ def editObject(id, name, sub_type, country, geometry, scale, db_file):
         max_lat = rec[7]
         max_lng = rec[8]
         scale = rec[9]
+        eng_name = rec[10].encode('utf-8')
     if id == -1:
         return None
     else:
-        return (name, sub_type, geometry, country, id, (min_lat+max_lat)/2, (min_lng+max_lng)/2, scale)
+        return (name, sub_type, geometry, country, id, (min_lat+max_lat)/2, (min_lng+max_lng)/2, scale, eng_name)
