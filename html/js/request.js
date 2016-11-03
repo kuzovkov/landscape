@@ -1,7 +1,7 @@
 /** модуль запросов к серверу **/
 
 var Request = {
-    server: 'http://landscapeeditor.loc:8080',
+    server: 'http://landscapeeditor.waronmap.com:8080',
     
      /**
     * определение принадлежности точки городу
