@@ -71,8 +71,7 @@ def editObject(id, name, sub_type, country, geometry, scale, eng_name, db_file):
     name = filterString(name)
     if len(name) == 0:
         return None
-    sql = "UPDATE object SET name='"+name+"',sub_type='"+sub_type+"', country='"+country+"',geometry='"+geometry+"',min_lng="+str(min_lng)+",min_lat="+str(min_lat)+",max_lng="+str(max_lng)+",max_lat="+str(max_lat)+ ",scale="+str(scale)+ ",eng_name='"+eng_name+"' WHERE id=" + str(id)
-    cur.execute(sql)
+    cur.execute("UPDATE object SET name=?,sub_type=?, country=?, geometry=?, min_lng=?, min_lat=?, max_lng=?, max_lat=?, scale=?, eng_name=? WHERE id=?", (name, sub_type, country, geometry,min_lng, min_lat,max_lng, max_lat,scale,eng_name,id))
     conn.commit()
     sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale, eng_name FROM object WHERE id=" + str(id)
     id = -1

@@ -69,13 +69,10 @@ def addObject(name, sub_type, country, geometry, scale, eng_name, db_file):
     name = filterString(name)
     if len(name) == 0:
         return None
-    sql = "INSERT INTO object (name, sub_type, geometry, min_lng, min_lat, max_lng, max_lat, country, scale, eng_name) VALUES('"+name+"', '"+sub_type+"', '"+geometry+"'," + str(min_lng) + "," + str(min_lat) + "," + str(max_lng) + "," + str(max_lat) + ", '" + country + "'," + str(scale) +",'" + eng_name +"')"
-    #print sql
-    cur.execute(sql)
+    cur.execute("INSERT INTO object (name, sub_type, geometry, min_lng, min_lat, max_lng, max_lat, country, scale, eng_name) VALUES(?,?,?,?,?,?,?,?,?,?)", (name, sub_type, geometry,min_lng,min_lat,max_lng,max_lat,country,scale,eng_name))
     conn.commit()
-    sql = "SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale, eng_name FROM object WHERE name='" + name +"'"
+    cur.execute("SELECT id, geometry, name, sub_type, country, min_lat, min_lng, max_lat, max_lng, scale, eng_name FROM object WHERE name=?",(name,))
     id = -1
-    res = cur.execute(sql)
     for rec in res:
         id = rec[0]
         geometry = rec[1].strip().encode('utf-8')
